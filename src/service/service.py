@@ -15,9 +15,11 @@ import os
 LOCALHOST = '0.0.0.0'  # nosec
 
 # RethinkDB variables
-ReDB_HOST = os.getenv('ReDB_HOST', 'rethink')
+ReDB_HOST = os.getenv('ReDB_HOST', 'localhost')
 ReDB_PORT = os.getenv('ReDB_PORT', 28015)
-ReDB_DEFAULT_DB = os.getenv('ReDB_DEFAULT_DB', 'STATUS')
+ReDB_DEFAULT_DB = os.getenv('ReDB_DEFAULT_DB', 'test')
+ReDB_USER = os.getenv('ReDB_USER', 'admin')
+ReDB_PASS = os.getenv('ReDB_PASS', '')
 
 # WebSocket variables
 WS_HOST = os.getenv('WS_HOST', LOCALHOST)
@@ -30,9 +32,9 @@ def health_check(path, request_headers):
         return http.HTTPStatus.OK, [], b'Server Up and Running!\n'
 
 
-def test_database_connection(host='localhost', port=28015):
+def test_database_connection(host='localhost', port=28015, user='rethink', password=''):
     try:
-        connection = connect(host, port, ReDB_DEFAULT_DB)
+        connection = connect(host, port, ReDB_DEFAULT_DB, user, password)
         if connection is not None and connection.is_open():
             logging.info(f'[INFO] Connection to database was successful')
         else:
@@ -51,8 +53,8 @@ def test_database_connection(host='localhost', port=28015):
         return True
 
 
-def configure_database(host='localhost', port=28015, db=None):
-    connection = connect(host, port, db)
+def configure_database(host='localhost', port=28015, db=None, user='rethink', password=''):
+    connection = connect(host, port, db, user, password)
     if db:
         connection.use(db)
 
@@ -82,7 +84,9 @@ async def changes_listener(websocket, path):
             connection = configure_database(
                     ReDB_HOST,
                     ReDB_PORT,
-                    ReDB_DEFAULT_DB
+                    ReDB_DEFAULT_DB,
+                    ReDB_USER,
+                    ReDB_PASS
                 )
         except Exception as err:
             if connection:

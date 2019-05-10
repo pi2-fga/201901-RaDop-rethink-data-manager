@@ -1,6 +1,6 @@
 from service.service import (test_database_connection, configure_database,
                              disconnect_database, health_check)
-from service.service import (ReDB_PORT, ReDB_HOST)
+from service.service import (ReDB_PORT, ReDB_HOST, ReDB_USER, ReDB_PASS)
 from db.db import connect
 from rethinkdb import net
 import pytest
@@ -13,11 +13,11 @@ database = 'pytest_schema'
 
 @pytest.fixture
 def rethink_connect():
-    return connect(ReDB_HOST, ReDB_PORT)
+    return connect(ReDB_HOST, ReDB_PORT, user=ReDB_USER, password=ReDB_PASS)
 
 
 def test_successful_database_connection():
-    result = test_database_connection(ReDB_HOST, ReDB_PORT)
+    result = test_database_connection(ReDB_HOST, ReDB_PORT, user=ReDB_USER, password=ReDB_PASS)
     assert result is not None
     assert result is True
 
@@ -29,11 +29,11 @@ def test_unsuccessful_database_connection():
 
 
 def test_successful_configure_database():
-    result = configure_database(ReDB_HOST, ReDB_PORT, database)
+    result = configure_database(ReDB_HOST, ReDB_PORT, database, user=ReDB_USER, password=ReDB_PASS)
     assert result is not None
     assert result.db == database
     assert result.host == ReDB_HOST
-    assert result.port == ReDB_PORT
+    assert result.port == int(ReDB_PORT)
     assert result._conn_type == net.ConnectionInstance
 
 

@@ -10,7 +10,7 @@ def main():
                                '%(levelname)-2s => %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S',
                         level=logging.INFO)
-    logging.info('[INFO] Starting RDM - Proxy Service...')
+    logging.info('[INFO] Starting RDM - Manager Service...')
     try:
         logging.info('[INFO] Testing RethinkDB Connection...')
         if not test_database_connection(ReDB_HOST, ReDB_PORT):

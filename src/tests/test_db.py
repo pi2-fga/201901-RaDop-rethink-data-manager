@@ -1,7 +1,7 @@
 from db.db import (connect, close_connection, desc_table, insert,
                    get_all, get, update, delete, delete_all, drop_table,
                    create_table, drop_db, create_db)
-from service.service import (ReDB_HOST, ReDB_PORT, ReDB_DEFAULT_DB)
+from service.service import (ReDB_HOST, ReDB_PORT, ReDB_DEFAULT_DB, ReDB_USER, ReDB_PASS)
 import pytest
 
 database = 'pytest_schema'
@@ -24,7 +24,7 @@ unique_id = ''
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_database():
-    connection = connect(ReDB_HOST, ReDB_PORT)
+    connection = connect(ReDB_HOST, ReDB_PORT, user=ReDB_USER, password=ReDB_PASS)
     create_table(database, empty_table, connection)
     delete_all(database, table, connection)
     data = [
@@ -101,11 +101,11 @@ def configure_database():
 
 @pytest.fixture
 def rethink_connect():
-    return connect(ReDB_HOST, ReDB_PORT)
+    return connect(ReDB_HOST, ReDB_PORT, user=ReDB_USER, password=ReDB_PASS)
 
 
 def test_successful_connection():
-    connection = connect(ReDB_HOST, ReDB_PORT, ReDB_DEFAULT_DB)
+    connection = connect(ReDB_HOST, ReDB_PORT, ReDB_DEFAULT_DB, user=ReDB_USER, password=ReDB_PASS)
     assert connection is not None
 
 
@@ -115,7 +115,7 @@ def test_unsuccessful_connection():
 
 
 def test_successful_disconnection():
-    connection = connect(ReDB_HOST, ReDB_PORT, ReDB_DEFAULT_DB)
+    connection = connect(ReDB_HOST, ReDB_PORT, ReDB_DEFAULT_DB, user=ReDB_USER, password=ReDB_PASS)
     assert connection is not None
     assert close_connection(connection) is True
 
