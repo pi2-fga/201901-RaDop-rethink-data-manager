@@ -2,14 +2,29 @@ from rethinkdb.errors import ReqlDriverError
 from rethinkdb import RethinkDB
 import logging
 
-r = RethinkDB() # Global rehtink handler
 
-def connect(db_host='localhost', db_port=28015, database='test', user='admin', password=''):
+# RethinkDB Global Handler
+r = RethinkDB()
+
+
+def connect(
+        db_host='localhost',
+        db_port=28015,
+        database='test',
+        user='admin',
+        password=''
+        ):
     try:
         logging.info(f'[INFO] Connecting into RethinkDB '
                      f'with options:\n\tHOST: {db_host}'
                      f'\n\tPORT: {db_port}\n\tDATABASE: {database}')
-        connection = r.connect(host=db_host, port=db_port, db=database, user=user, password=password)
+        connection = r.connect(
+            host=db_host,
+            port=db_port,
+            db=database,
+            user=user,
+            password=password
+            )
     except ReqlDriverError as err:
         logging.error(f'[ERROR] Error trying to connect with RethinkDB.'
                       f' Traceback: {err}')

@@ -13,11 +13,21 @@ database = 'pytest_schema'
 
 @pytest.fixture
 def rethink_connect():
-    return connect(ReDB_HOST, ReDB_PORT, user=ReDB_USER, password=ReDB_PASS)
+    return connect(
+        ReDB_HOST,
+        ReDB_PORT,
+        user=ReDB_USER,
+        password=ReDB_PASS
+        )
 
 
 def test_successful_database_connection():
-    result = test_database_connection(ReDB_HOST, ReDB_PORT, user=ReDB_USER, password=ReDB_PASS)
+    result = test_database_connection(
+        ReDB_HOST,
+        ReDB_PORT,
+        user=ReDB_USER,
+        password=ReDB_PASS
+        )
     assert result is not None
     assert result is True
 
@@ -29,7 +39,13 @@ def test_unsuccessful_database_connection():
 
 
 def test_successful_configure_database():
-    result = configure_database(ReDB_HOST, ReDB_PORT, database, user=ReDB_USER, password=ReDB_PASS)
+    result = configure_database(
+        ReDB_HOST,
+        ReDB_PORT,
+        database,
+        user=ReDB_USER,
+        password=ReDB_PASS
+        )
     assert result is not None
     assert result.db == database
     assert result.host == ReDB_HOST

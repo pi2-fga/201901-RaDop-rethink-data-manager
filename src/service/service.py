@@ -1,15 +1,16 @@
 from db.db import (connect, close_connection)
-from datetime import datetime as dt
 from websockets.exceptions import ConnectionClosed
 from concurrent.futures._base import CancelledError
-import rethinkdb as r
+from rethinkdb import RethinkDB
 import websockets
 import logging
 import json
-import time
 import http
 import os
 
+
+# RethinkDB Global Handler
+r = RethinkDB()
 
 # Default localhost address
 LOCALHOST = '0.0.0.0'  # nosec
@@ -32,7 +33,12 @@ def health_check(path, request_headers):
         return http.HTTPStatus.OK, [], b'Server Up and Running!\n'
 
 
-def test_database_connection(host='localhost', port=28015, user='rethink', password=''):
+def test_database_connection(
+        host='localhost',
+        port=28015,
+        user='admin',
+        password=''
+        ):
     try:
         connection = connect(host, port, ReDB_DEFAULT_DB, user, password)
         if connection is not None and connection.is_open():
@@ -53,7 +59,13 @@ def test_database_connection(host='localhost', port=28015, user='rethink', passw
         return True
 
 
-def configure_database(host='localhost', port=28015, db=None, user='rethink', password=''):
+def configure_database(
+        host='localhost',
+        port=28015,
+        db=None,
+        user='admin',
+        password=''
+        ):
     connection = connect(host, port, db, user, password)
     if db:
         connection.use(db)
