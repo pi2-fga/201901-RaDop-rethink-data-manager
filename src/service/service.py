@@ -19,8 +19,7 @@ op = {
     4: '/update',
     5: '/delete',
     6: '/delete_all',
-    7: '/create_table',
-    8: '/audit'
+    7: '/create_table'
 }
 
 # RethinkDB Global Handler
@@ -180,7 +179,9 @@ async def data_manager(websocket, path):
         logging.info(f'[INFO] Data received: {data}')
 
         if request_type != RDM_CALL:
-            pass
+            raise Exception(f'Type of service not as expected. Probably a call'
+                            f'for other service. Verify logs for further infor'
+                            f'mation!')
 
         if save_audit(identifier, request_type, payload, time):
             pass
@@ -313,8 +314,6 @@ async def data_manager(websocket, path):
                                     f' already exists!')
                 else:
                     await websocket.send(json.dumps(success_msg(result)))
-            elif str(path) == op[8]:
-                pass
             else:
                 raise Exception(f'Unknown operation on the current path.'
                                 f'\nReceived path: {str(path)}')
