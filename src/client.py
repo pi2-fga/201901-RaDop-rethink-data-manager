@@ -10,18 +10,35 @@ async def hello():
     op = input("Which operation will be used?: ")
     async with websockets.connect(
             f'ws://0.0.0.0:8765/{op}') as websocket:
+
         database = input("Get database name: ")
         table = input("Get table name: ")
         payload = input("Get package data: ")
         recv_id = input("Identifier: ")
-        payload = json.loads(payload)
-        payload = {'database': database, 'table': table, 'data': payload, 'identifier': recv_id}
-        identifier = str(uuid.uuid4())
-        time = datetime.datetime.utcnow()
-        time = str(time.isoformat('T') + 'Z')
-        type = 'rethkin-manager-call'
 
-        data = {'id': identifier, 'type': type, 'payload': payload, 'time': time}
+        payload = json.loads(payload)
+
+        payload = {
+            'database': database,
+            'table': table,
+            'data': payload,
+            'identifier':
+            recv_id
+            }
+
+        identifier = str(uuid.uuid4())
+
+        time = datetime.datetime.utcnow()
+
+        time = str(time.isoformat('T') + 'Z')
+
+        type = 'rethkin-manager-call'
+        data = {
+            'id': identifier,
+            'type': type,
+            'payload': payload,
+            'time': time
+            }
 
         await websocket.send(json.dumps(data))
         print(f"> {data}")

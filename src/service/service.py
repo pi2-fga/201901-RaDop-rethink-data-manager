@@ -20,6 +20,7 @@ op = {
     5: '/delete',
     6: '/delete_all',
     7: '/create_table',
+    8: '/audit'
 }
 
 # RethinkDB Global Handler
@@ -34,16 +35,22 @@ ReDB_PORT = os.getenv('ReDB_PORT', 28015)
 ReDB_DEFAULT_DB = os.getenv('ReDB_DEFAULT_DB', 'test')
 ReDB_USER = os.getenv('ReDB_USER', 'admin')
 ReDB_PASS = os.getenv('ReDB_PASS', '')
+ReDB_AUDIT_DB = os.getenv('ReDB_AUDIT_DB', 'AUDIT')
+ReDB_AUDIT_TABLE = os.getenv('ReDB_AUDIT_TABLE', 'rethink_data_manager')
 
 # WebSocket variables
 WS_HOST = os.getenv('WS_HOST', LOCALHOST)
 WS_PORT = os.getenv('WS_PORT', 8765)
+
+# Other variables
+RDM_CALL = 'rethink-manager-call'
 
 
 def health_check(path, request_headers):
     if path == '/health' or path == '/health/':
         logging.info(f'[INFO] HEALTH CHECK PROCESS: {request_headers}')
         return http.HTTPStatus.OK, [], b'Server Up and Running!\n'
+
 
 def error_msg(path):
     operation = path.lstrip('/')
@@ -55,7 +62,6 @@ def error_msg(path):
 
 def success_msg(msg):
     return {'status_code': 200, 'response_message': msg}
-
 
 
 def test_database_connection(
@@ -111,6 +117,53 @@ def disconnect_database(connection):
         return True
 
 
+def save_audit(identifier, request_type, payload, time):
+    try:
+        connection = configure_database(
+            ReDB_HOST,
+            ReDB_PORT,
+            ReDB_AUDIT_DB,
+            ReDB_USER,
+            ReDB_PASS
+        )
+        audit_data = {
+            'identifier': identifier,
+            'type': request_type,
+            'payload': payload,
+            'time': time
+            }
+        result = insert(
+            ReDB_AUDIT_DB,
+            ReDB_AUDIT_TABLE,
+            audit_data,
+            connection
+            )
+        if result == {}:
+            raise Exception(f'[ERROR] Error trying to insert data. '
+                            f'Verify the logs for the full traceback. '
+                            f'The data was not inserted!')
+        else:
+            logging.info(f'[INFO] Audit data saved into Rethink DB!\n'
+                         f'Saved payload: {audit_data}\nRethink output'
+                         f': {result}')
+            return True
+    except Exception as err:
+            if connection:
+                disconnect_database(connection)
+                raise err
+    except KeyboardInterrupt as err:
+        disconnect_database(connection)
+        raise err
+    except ConnectionClosed as err:
+        disconnect_database(connection)
+        raise err
+    except CancelledError as err:
+        disconnect_database(connection)
+        raise err
+    finally:
+        return False
+
+
 async def data_manager(websocket, path):
     logging.info(f'[INFO] Current path: {str(path)}')
     try:
@@ -120,12 +173,21 @@ async def data_manager(websocket, path):
         data = await websocket.recv()
         data = json.loads(data)
 
-        identifer = data['id']
-        type = data['type']
+        identifier = data['id']
+        request_type = data['type']
         payload = data['payload']
         time = data['time']
-
         logging.info(f'[INFO] Data received: {data}')
+
+        if request_type != RDM_CALL:
+            pass
+
+        if save_audit(identifier, request_type, payload, time):
+            pass
+        else:
+            logging.error(f'[ERROR] Error while trying to save data to audit'
+                          f' database. Verify Rethink Data Manager logs for '
+                          f'furhter information!')
 
         try:
             connection = configure_database(
@@ -135,7 +197,7 @@ async def data_manager(websocket, path):
                     ReDB_USER,
                     ReDB_PASS
                 )
-            
+
             if str(path) == op[1]:
                 database = payload['database']
                 table = payload['table']
@@ -174,8 +236,8 @@ async def data_manager(websocket, path):
                 if result == {}:
                     raise Exception(f'[ERROR] Error trying to getting data. '
                                     f'Verify the logs for the full traceback. '
-                                    f'Neither the object doesn\'t exists or no '
-                                    f'table was found!')
+                                    f'Neither the object doesn\'t exists or no'
+                                    f' table was found!')
                 else:
                     await websocket.send(json.dumps(success_msg(result)))
             elif str(path) == op[4]:
@@ -196,8 +258,8 @@ async def data_manager(websocket, path):
                 if result == {}:
                     raise Exception(f'[ERROR] Error trying to update object. '
                                     f'Verify the logs for the full traceback. '
-                                    f'Neither the object doesn\'t exists or no '
-                                    f'table was found!')
+                                    f'Neither the object doesn\'t exists or no'
+                                    f' table was found!')
                 elif result['objects_updated'] is 0:
                     raise Exception(f'[ERROR] Error trying to update object. '
                                     f'Verify the logs for the full traceback.')
@@ -214,8 +276,8 @@ async def data_manager(websocket, path):
                 if result == {}:
                     raise Exception(f'[ERROR] Error trying to delete object. '
                                     f'Verify the logs for the full traceback. '
-                                    f'Neither the object doesn\'t exists or no '
-                                    f'table was found!')
+                                    f'Neither the object doesn\'t exists or no'
+                                    f' table was found!')
                 elif result['objects_deleted'] is 0:
                     raise Exception(f'[ERROR] Error trying to delete object. '
                                     f'Verify the logs for the full traceback.')
@@ -251,6 +313,8 @@ async def data_manager(websocket, path):
                                     f' already exists!')
                 else:
                     await websocket.send(json.dumps(success_msg(result)))
+            elif str(path) == op[8]:
+                pass
             else:
                 raise Exception(f'Unknown operation on the current path.'
                                 f'\nReceived path: {str(path)}')
