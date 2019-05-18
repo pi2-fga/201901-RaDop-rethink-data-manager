@@ -117,7 +117,7 @@ def get(database, table, identifier, connection):
         if item is None:
             raise Exception(f'Select Error.\nCouldn\'t find any data in:'
                             f'\n\tdatabase: {database}\n\t'
-                            f'table: {table}\n\t id: {identifier}')
+                            f'table: {table}\n\tid: {identifier}')
     except Exception as err:
         logging.error(f'[ERROR] Error trying to get data at db.py/get.'
                       f'\nTraceback: {err}')
