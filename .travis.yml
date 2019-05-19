@@ -20,9 +20,9 @@ script:
   - pytest
   - coverage run -m pytest
 after_script:
-  - coverage xml
+  - pytest --cov=src src/tests/ --cov-report xml
   - cp docs/coverage.xml .
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t coverage.py
+  - ./cc-test-reporter after-build -p $(pwd) --exit-code $TRAVIS_TEST_RESULT -t coverage.py
 deploy:
   provider: script
   script: bash deploy.sh
