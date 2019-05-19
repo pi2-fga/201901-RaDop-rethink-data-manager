@@ -103,6 +103,7 @@ export ReDB_HOST='0.0.0.0'
 ```
 
 Caso o comando acima for executado no terminal ele valerá apenas enquanto a sessão desse terminal estiver viva, para uma configuração mais duradoura edite o `.bashrc` ou o `.profile` da sua máquina, assim as variáveis de ambiente configuradas sempre estarão disponíveis no sistema.
+Caso queira usar o serviço no formato de um container docker configure o arquivo `.env` presente na pasta raíz do projeto e faça como mostrado abaixo nas seção de _build_ e _deploy_ do RDM.
 
 ## Operações do RDM
 
