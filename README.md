@@ -4,7 +4,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/3e7d48b6113707baa23d/maintainability)](https://codeclimate.com/github/radar-pi/rethink-data-manager/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3e7d48b6113707baa23d/test_coverage)](https://codeclimate.com/github/radar-pi/rethink-data-manager/test_coverage)
 
-O **RDM (Rethink Data Manager)** é o serviço responsável por comunicar sistemas com o banco de dados RethinkDB do projeto, além de suprir, via websocket, um servidor com informação de mensagens de atualização da execução (Status) dos sistemas e subsistemas da Folha de Pagamento.
+O **RDM (Rethink Data Manager)** é o serviço responsável por comunicar sistemas com o banco de dados RethinkDB do projeto, além de suprir, via websocket, um servidor para todas as operações do banco de dados.
 
 ## Parâmetro
 
