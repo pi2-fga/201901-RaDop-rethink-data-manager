@@ -1,5 +1,6 @@
 from service.service import (test_database_connection, server,
-                             ReDB_HOST, ReDB_PORT)
+                             ReDB_HOST, ReDB_PORT, ReDB_USER,
+                             ReDB_PASS)
 from websockets.exceptions import ConnectionClosed
 import asyncio
 import logging
@@ -13,7 +14,10 @@ def main():
     logging.info('[INFO] Starting RDM - Manager Service...')
     try:
         logging.info('[INFO] Testing RethinkDB Connection...')
-        if not test_database_connection(ReDB_HOST, ReDB_PORT):
+        if not test_database_connection(ReDB_HOST,
+                                        ReDB_PORT,
+                                        ReDB_USER,
+                                        ReDB_PASS):
             logging.critical('[CRITICAL] RDM couldn\'t connect with the'
                              ' database.\n Unable to start service!\n')
             raise Exception(f'No database connection!')
