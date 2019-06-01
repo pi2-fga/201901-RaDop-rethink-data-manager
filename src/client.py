@@ -9,7 +9,7 @@ from websockets import ConnectionClosed
 async def hello():
     op = input("Which operation will be used?: ")
     async with websockets.connect(
-            f'ws://0.0.0.0:8765/{op}') as websocket:
+            f'ws://178.128.73.29:8765/{op}') as websocket:
 
         database = input("Get database name: ")
         table = input("Get table name: ")
@@ -32,7 +32,7 @@ async def hello():
 
         time = str(time.isoformat('T') + 'Z')
 
-        type = 'rethkin-manager-call'
+        type = "rethink-manager-call"
         data = {
             'id': identifier,
             'type': type,
