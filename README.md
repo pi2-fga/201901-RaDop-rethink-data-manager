@@ -183,6 +183,27 @@ Logo para a listagem, no `payload` deve haver as informações do `database` e a
 
 A URL de chamada vai depender da configuração do _host_ e da porta do _webscoket_, mas o exemplo em testes locais seria `localhost:8765/get_all`
 
+- `/filter`
+
+Operação para listar todos os objetos de uma tabela no banco de dados com um filtro (condição). O modelo de mensagem para envio e para garantir o funcionamento da operação é:
+
+```shell
+{
+    "id": "a5093f52-bde6-4c74-8989-c36d00e7d7b5",
+    "type": "rethink-data-call",
+    "payload": {
+        "database": "database", # Nome do esquema que será usado
+        "table": "table", # Nome da tabela que será usada
+        "filter: "{"radar_id": 1}" # Condição para pesquisa dos objetos
+    },
+    "time": "2019-05-18T22:42:35.267029Z"
+}
+```
+
+Logo para a listagem, no `payload` deve haver as informações do `database`, da `table` e da condição `filter` para seleção.
+
+A URL de chamada vai depender da configuração do _host_ e da porta do _webscoket_, mas o exemplo em testes locais seria `localhost:8765/filter`
+
 - `/update`
 
 Operação para atualizar algum objeto do banco de dados. O modelo de mensagem para envio e para garantir o funcionamento da operação é:

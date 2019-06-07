@@ -1,4 +1,4 @@
-from db.db import (connect, close_connection)
+from db.db import (connect, close_connection, get_where)
 from db.db import (insert, get_all, get, update)
 from db.db import (delete, delete_all, create_table)
 from websockets.exceptions import ConnectionClosed
@@ -19,7 +19,8 @@ op = {
     4: '/update',
     5: '/delete',
     6: '/delete_all',
-    7: '/create_table'
+    7: '/create_table',
+    8: '/filter'
 }
 
 # RethinkDB Global Handler
@@ -145,6 +146,7 @@ def save_audit(identifier, request_type, payload, time):
             logging.info(f'[INFO] Audit data saved into Rethink DB!\n'
                          f'Saved payload: {audit_data}\nRethink output'
                          f': {result}')
+            disconnect_database(connection)
             return True
     except Exception as err:
             if connection:
@@ -159,8 +161,6 @@ def save_audit(identifier, request_type, payload, time):
     except CancelledError as err:
         disconnect_database(connection)
         raise err
-    finally:
-        return False
 
 
 async def data_manager(websocket, path):
@@ -303,7 +303,8 @@ async def data_manager(websocket, path):
             elif str(path) == op[7]:
                 database = payload['database']
                 table = payload['table']
-                logging.info(f'')
+                logging.info(f'[INFO] Creating new table:\n\tDATABASE: '
+                             f'{database}\n\tTABLE: {table}')
                 result = create_table(database, table, connection)
                 if result == {}:
                     raise Exception(f'[ERROR] Unknown error while trying to '
@@ -312,6 +313,21 @@ async def data_manager(websocket, path):
                 elif result['tables_created'] is 0:
                     raise Exception(f'[ERROR] This table ({table})'
                                     f' already exists!')
+                else:
+                    await websocket.send(json.dumps(success_msg(result)))
+            elif str(path) == op[8]:
+                database = payload['database']
+                table = payload['table']
+                statment = payload['filter']
+                statment = json.loads(statment)
+                logging.info(f'[INFO] Getting objetct data:\n\tDATABASE: '
+                             f'{database}\n\tTABLE: {table}\n\tFILTER: '
+                             f'{statment}')
+                result = get_where(database, table, statment, connection)
+                if result == {}:
+                    raise Exception(f'[ERROR] Unknown error while trying to '
+                                    f'create a new table. Verify the logs'
+                                    f' for the the full traceback.')
                 else:
                     await websocket.send(json.dumps(success_msg(result)))
             else:
