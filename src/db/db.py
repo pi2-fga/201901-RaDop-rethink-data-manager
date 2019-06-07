@@ -144,7 +144,7 @@ def get_where(database, table, statment, connection):
         result = list(result)
         logging.info(f'[INFO] Number of object(s) recovered: {len(result)}'
                      f'\n\tObject recovered: {result}')
-        return result        
+        return result
 
 
 def update(database, table, identifier, update_statement, connection):
