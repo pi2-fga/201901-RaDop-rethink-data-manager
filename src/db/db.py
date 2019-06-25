@@ -117,7 +117,7 @@ def get(database, table, identifier, connection):
         if item is None:
             raise Exception(f'Select Error.\nCouldn\'t find any data in:'
                             f'\n\tdatabase: {database}\n\t'
-                            f'table: {table}\n\t id: {identifier}')
+                            f'table: {table}\n\tid: {identifier}')
     except Exception as err:
         logging.error(f'[ERROR] Error trying to get data at db.py/get.'
                       f'\nTraceback: {err}')
@@ -126,6 +126,25 @@ def get(database, table, identifier, connection):
         logging.info(f'[INFO] Number of object(s) recovered: {len(item)}'
                      f'\n\tObject recovered: {item}')
         return item
+
+
+def get_where(database, table, statment, connection):
+    try:
+        result = r.db(database).table(table).filter(statment).run(connection)
+        if result is None:
+            raise Exception(f'Select Error.\nCouldn\'t find any data in:'
+                            f'\n\tdatabase: {database}\n\t'
+                            f'table: {table}\n\tfilter: {statment}')
+    except Exception as err:
+        logging.error(f'[ERROR] Error trying to get data at db.py/get_where.'
+                      f'\nTraceback: {err}')
+        return {}
+    else:
+        result = result.items
+        result = list(result)
+        logging.info(f'[INFO] Number of object(s) recovered: {len(result)}'
+                     f'\n\tObject recovered: {result}')
+        return result
 
 
 def update(database, table, identifier, update_statement, connection):

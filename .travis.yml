@@ -3,17 +3,30 @@ sudo: required
 language: python
 python:
   - "3.7"
+env:
+  global:
+    - CC_TEST_REPORTER_ID=bd2dea73516494744cc6de5a2cf41d6734e03f7c2db2d292e944a347bb219281
 services:
   - docker
 before_install:
   - pip install -U pip
   - pip install -r requirements.txt
 before_script:
-  - flake8 src/
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
+  - flake8 src/
   - pytest
+  - coverage run -m pytest
+  - echo $DOCKERHUB_PASS | docker login --username $DOCKERHUB_USER --password-stdin
+after_script:
+  - pytest --cov=src src/tests/ --cov-report xml
+  - cp docs/coverage.xml .
+  - ./cc-test-reporter after-build -p $(pwd) --exit-code $TRAVIS_TEST_RESULT -t coverage.py
 deploy:
   provider: script
   script: bash deploy.sh
+  skip_cleanup: true
   on:
     branch: develop
