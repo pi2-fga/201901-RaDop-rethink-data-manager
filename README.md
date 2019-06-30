@@ -249,7 +249,7 @@ Logo para deleção, no `payload` deve haver as informações do `database`, `ta
 
 A URL de chamada vai depender da configuração do _host_ e da porta do _webscoket_, mas o exemplo em testes locais seria `localhost:8765/delete`
 
-- `delete_all`
+- ~~`delete_all`~~ (**DEPRECATED**)
 
 Operação para deletar todos os objetos de uma tabela no banco de dados. O modelo de mensagem para envio e para garantir o funcionamento da operação é:
 
@@ -269,7 +269,7 @@ Logo para deleção de todos os objetos, no `payload` deve haver as informaçõe
 
 A URL de chamada vai depender da configuração do _host_ e da porta do _webscoket_, mas o exemplo em testes locais seria `localhost:8765/delete_all`
 
-- `/create_table`
+- ~~`/create_table`~~ (**DEPRECATED**)
 
 Operação para criar uma nova tabela no esquema do banco de dados. O modelo de mensagem para envio e para garantir o funcionamento da operação é:
 

@@ -285,36 +285,38 @@ async def data_manager(websocket, path):
                 else:
                     await websocket.send(json.dumps(success_msg(result)))
             elif str(path) == op[6]:
-                database = payload['database']
-                table = payload['table']
-                logging.info(f'[INFO] Deleting all objects:\n\tDATABASE: '
-                             f'{database}\n\tTABLE: {table}')
-                result = delete_all(database, table, connection)
-                if result == {}:
-                    raise Exception(f'[ERROR] Error trying to delete objects. '
-                                    f'Verify the logs for the full traceback. '
-                                    f'Neither some error was found or no table'
-                                    f' was found!')
-                elif result['objects_deleted'] is 0:
-                    raise Exception(f'[ERROR] Error trying to delete object. '
-                                    f'Verify the logs for the full traceback.')
-                else:
-                    await websocket.send(json.dumps(success_msg(result)))
+                pass
+                # database = payload['database']
+                # table = payload['table']
+                # logging.info(f'[INFO] Deleting all objects:\n\tDATABASE: '
+                #              f'{database}\n\tTABLE: {table}')
+                # result = delete_all(database, table, connection)
+                # if result == {}:
+                #     raise Exception(f'[ERROR] Error trying to delete objects. '
+                #                     f'Verify the logs for the full traceback. '
+                #                     f'Neither some error was found or no table'
+                #                     f' was found!')
+                # elif result['objects_deleted'] is 0:
+                #     raise Exception(f'[ERROR] Error trying to delete object. '
+                #                     f'Verify the logs for the full traceback.')
+                # else:
+                #     await websocket.send(json.dumps(success_msg(result)))
             elif str(path) == op[7]:
-                database = payload['database']
-                table = payload['table']
-                logging.info(f'[INFO] Creating new table:\n\tDATABASE: '
-                             f'{database}\n\tTABLE: {table}')
-                result = create_table(database, table, connection)
-                if result == {}:
-                    raise Exception(f'[ERROR] Unknown error while trying to '
-                                    f'create a new table. Verify the logs'
-                                    f' for the the full traceback.')
-                elif result['tables_created'] is 0:
-                    raise Exception(f'[ERROR] This table ({table})'
-                                    f' already exists!')
-                else:
-                    await websocket.send(json.dumps(success_msg(result)))
+                pass
+                # database = payload['database']
+                # table = payload['table']
+                # logging.info(f'[INFO] Creating new table:\n\tDATABASE: '
+                #              f'{database}\n\tTABLE: {table}')
+                # result = create_table(database, table, connection)
+                # if result == {}:
+                #     raise Exception(f'[ERROR] Unknown error while trying to '
+                #                     f'create a new table. Verify the logs'
+                #                     f' for the the full traceback.')
+                # elif result['tables_created'] is 0:
+                #     raise Exception(f'[ERROR] This table ({table})'
+                #                     f' already exists!')
+                # else:
+                #     await websocket.send(json.dumps(success_msg(result)))
             elif str(path) == op[8]:
                 database = payload['database']
                 table = payload['table']
